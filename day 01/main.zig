@@ -34,10 +34,17 @@ pub fn main() !void {
     const slice2 = try list2.toOwnedSlice();
     std.mem.sort(i32, slice2, {}, comptime std.sort.asc(i32));
 
-    var total: u32 = 0;
-    for (slice1, 0..) |_, index| {
-        const diff = @abs(slice1[index] - slice2[index]);
-        total += diff;
+    var total: i32 = 0;
+    for (slice1) |value1| {
+        var cnt: i32 = 0;
+        for (slice2) |value2| {
+            if (value1 == value2) {
+                cnt += 1;
+            }
+        }
+        total += value1 * cnt;
+        //const diff = @abs(slice1[index] - slice2[index]);
+        //total += diff;
     }
     std.debug.print("total: {d}\n", .{total});
 }
