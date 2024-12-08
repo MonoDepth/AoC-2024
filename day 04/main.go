@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	xmas   = "XMAS"
-	xmas_r = "SAMX"
+	xmas   = "MAS"
+	xmas_r = "SAM"
 )
 
 func main() {
@@ -21,82 +21,34 @@ func main() {
 	total := 0
 
 	for hIdx, line := range lines {
-		for vIdx := 0; vIdx < len(line); vIdx++ {
 
-			if len(line) >= vIdx+4 {
-				if line[vIdx:vIdx+4] == xmas {
-					total++
-				}
+		if hIdx == 0 || hIdx == len(lines)-1 {
+			continue
+		}
 
-				if line[vIdx:vIdx+4] == xmas_r {
-					total++
-				}
+		for vIdx := 1; vIdx < len(line)-1; vIdx++ {
+			t := 0
+			if line[vIdx] != 'A' {
+				continue
 			}
 
-			horizontal := extractH(lines, hIdx, vIdx, 4)
+			diag := string(lines[hIdx-1][vIdx-1]) + string(lines[hIdx][vIdx]) + string(lines[hIdx+1][vIdx+1])
+			diag_r := string(lines[hIdx+1][vIdx-1]) + string(lines[hIdx][vIdx]) + string(lines[hIdx-1][vIdx+1])
 
-			if horizontal == xmas || horizontal == xmas_r {
-				total++
+			if diag == xmas || diag == xmas_r {
+				t++
 			}
 
-			diagonal := extractDiagonal(lines, hIdx, vIdx, 4)
-			if diagonal == xmas || diagonal == xmas_r {
-				total++
+			if diag_r == xmas || diag_r == xmas_r {
+				t++
 			}
 
-			diagonal_r := extractDiagonal_R(lines, hIdx, vIdx, 4)
-			if diagonal_r == xmas || diagonal_r == xmas_r {
+			if t == 2 {
 				total++
 			}
 		}
 	}
-
 	fmt.Println("Total", total)
-}
-
-func extractH(lines []string, hIdx, vIdx, length int) string {
-	str := ""
-	for i := hIdx; i < len(lines) && len(str) < length; i++ {
-
-		if vIdx >= len(lines[i]) {
-			break
-		}
-
-		str += string(lines[i][vIdx])
-	}
-	return str
-}
-
-func extractDiagonal(lines []string, hIdx, vIdx, length int) string {
-	str := ""
-	for i := 0; len(str) < length; i++ {
-		if hIdx+i >= len(lines) {
-			break
-		}
-
-		if vIdx+i >= len(lines[hIdx+i]) {
-			break
-		}
-
-		str += string(lines[hIdx+i][vIdx+i])
-	}
-	return str
-}
-
-func extractDiagonal_R(lines []string, hIdx, vIdx, length int) string {
-	str := ""
-	for i := 0; len(str) < length; i++ {
-		if hIdx-i < 0 {
-			break
-		}
-
-		if vIdx+i >= len(lines[hIdx-i]) {
-			break
-		}
-
-		str += string(lines[hIdx-i][vIdx+i])
-	}
-	return str
 }
 
 func readFile(filename string) ([]string, error) {
