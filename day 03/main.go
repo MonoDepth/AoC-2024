@@ -9,7 +9,9 @@ import (
 	"strings"
 )
 
-var regex = regexp.MustCompile(`mul\(\d+,\d+\)`)
+var regex = regexp.MustCompile(`mul\(\d+,\d+\)|do\(\)|don't\(\)`)
+var active = true
+var total = 0
 
 func main() {
 	lines, err := readFile("input.txt")
@@ -18,11 +20,10 @@ func main() {
 		return
 	}
 
-	total := 0
 	for _, line := range lines {
 		instructions := filterInput(line)
 		for _, instruction := range instructions {
-			total += executeInstruction(instruction)
+			executeInstruction(instruction)
 		}
 	}
 
@@ -33,12 +34,26 @@ func filterInput(input string) []string {
 	return regex.FindAllString(input, -1)
 }
 
-func executeInstruction(instruction string) int {
-	fmt.Println("Got instruction", instruction)
+func executeInstruction(instruction string) {
+	if instruction == "don't()" {
+		active = false
+		return
+	}
+
+	if instruction == "do()" {
+		active = true
+		return
+	}
+
+	if !active {
+		return
+	}
+
+	fmt.Println("Got instruction", instruction, "with state", active)
 	numbers := strings.Split(strings.TrimSuffix(strings.TrimPrefix(instruction, "mul("), ")"), ",")
 	lt, _ := strconv.Atoi(numbers[0])
 	rt, _ := strconv.Atoi(numbers[1])
-	return lt * rt
+	total += lt * rt
 }
 
 func readFile(filename string) ([]string, error) {
